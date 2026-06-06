@@ -1,0 +1,108 @@
+local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
+
+local Options = Library.Options
+local Toggles = Library.Toggles
+
+Library.ForceCheckbox = false
+Library.ShowCustomCursor = true
+
+local Window = Library:CreateWindow({
+    Title = "ThegxxHub",
+    Center = true,
+    AutoShow = true,
+    Resizable = true,
+    ShowCustomCursor = true,
+    NotifySide = "Right"
+})
+
+local Tabs = {
+    Combat = Window:AddTab("Combate", "swords"),
+    Visuals = Window:AddTab("Visuais", "eye"),
+    UISettings = Window:AddTab("Configurações", "settings")
+}
+
+-- ==========================================
+-- ⚔️ ABA COMBATE (AIMBOT & TRIGGERBOT)
+-- ==========================================
+local AimbotBox = Tabs.Combat:AddLeftGroupbox("Aimbot Customizável", "crosshair")
+
+AimbotBox:AddToggle("AimAtivar", { Text = "Ativar Aimbot" })
+    :AddKeyPicker("AimKey", { Default = "MB2", Mode = "Hold", SyncToggleState = false, Text = "Tecla Aimbot" })
+
+AimbotBox:AddToggle("AimVisCheck", { Text = "Visible Check", Tooltip = "Ignora alvos atrás de paredes" })
+AimbotBox:AddToggle("AimTeamCheck", { Text = "Team Check", Tooltip = "Ignora membros do seu time" })
+
+AimbotBox:AddDropdown("AimPart", {
+    Values = {"Head", "Torso", "HumanoidRootPart"},
+    Default = 1,
+    Multi = false,
+    Text = "Alvo do Corpo"
+})
+
+AimbotBox:AddSlider("AimSmoothness", { Text = "Suavização (Smoothness)", Default = 3, Min = 1, Max = 10, Rounding = 1 })
+AimbotBox:AddSlider("AimReaction", { Text = "Tempo de Reação (ms)", Default = 0, Min = 0, Max = 500, Rounding = 0 })
+
+local TriggerBox = Tabs.Combat:AddRightGroupbox("Triggerbot Automático")
+
+TriggerBox:AddToggle("TriggerAtivar", { Text = "Ativar Triggerbot" })
+    :AddKeyPicker("TriggerKey", { Default = "T", SyncToggleState = true, Mode = "Toggle", Text = "Atalho Trigger" })
+
+TriggerBox:AddToggle("TriggerTeamCheck", { Text = "Ignorar Aliados" })
+TriggerBox:AddSlider("TriggerDelay", { Text = "Atraso do Disparo (ms)", Default = 50, Min = 0, Max = 300, Rounding = 0 })
+
+-- ==========================================
+-- 👁️ ABA VISUAIS (ESP & CHAMS)
+-- ==========================================
+local EspBox = Tabs.Visuals:AddLeftGroupbox("ESP Principal", "user")
+
+EspBox:AddToggle("EspMaster", { Text = "Ativar ESP" })
+    :AddKeyPicker("EspKey", { Default = "F4", Mode = "Toggle", SyncToggleState = true, Text = "Atalho ESP" })
+
+EspBox:AddToggle("EspName", { Text = "Nomes" })
+    :AddColorPicker("EspNameCor", { Default = Color3.new(1, 1, 1), Title = "Cor dos Nomes" })
+
+EspBox:AddToggle("EspHealth", { Text = "Barra de Vida" })
+
+EspBox:AddToggle("EspDist", { Text = "Distância" })
+    :AddColorPicker("EspDistCor", { Default = Color3.new(0.8, 0.8, 0.8), Title = "Cor da Distância" })
+
+local ChamsBox = Tabs.Visuals:AddRightGroupbox("Esqueletos & Chams")
+
+ChamsBox:AddToggle("EspSkel", { Text = "Desenhar Esqueleto" })
+    :AddColorPicker("EspSkelCor", { Default = Color3.new(1, 1, 1), Title = "Cor do Esqueleto" })
+
+ChamsBox:AddSlider("EspSkelThick", { Text = "Espessura do Esqueleto", Default = 1, Min = 1, Max = 5, Rounding = 1 })
+
+ChamsBox:AddDivider()
+
+ChamsBox:AddToggle("EspChams", { Text = "Ativar Chams" })
+    :AddColorPicker("EspChamsFill", { Default = Color3.fromRGB(255, 50, 50), Title = "Preenchimento", Transparency = 0.5 })
+    :AddColorPicker("EspChamsOutline", { Default = Color3.fromRGB(255, 255, 255), Title = "Contorno", Transparency = 0 })
+
+-- ==========================================
+-- ⚙️ CONFIGURAÇÕES DE SISTEMA
+-- ==========================================
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({ "MenuKeybind" })
+SaveManager:SetFolder("ThegxxHub/Configs")
+
+SaveManager:BuildConfigSection(Tabs.UISettings)
+ThemeManager:ApplyToTab(Tabs.UISettings)
+
+Tabs.UISettings:AddLeftGroupbox("Menu"):AddButton({ Text = "Unload Hub", Func = function() Library:Unload() end })
+Library.ToggleKeybind = Options.MenuKeybind
+
+SaveManager:LoadAutoloadConfig()
+
+-- Notificação visual de sucesso após o carregamento completo
+Library:Notify({
+    Title = "ThegxxHub",
+    Description = "Funções carregadas com sucesso!",
+    Time = 5
+})
